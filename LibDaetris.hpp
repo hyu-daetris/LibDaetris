@@ -1,6 +1,6 @@
 #ifndef LIBDAETRIS_HPP
 #define LIBDAETRIS_HPP
-
+#include <functional>
 
 #define LIB_DAETRIS_SERIAL_HPP
 
@@ -9,9 +9,9 @@ namespace LibDaetris
 {
 class SerialApp : public ofBaseApp {
 public:
-    using callback_t = void(*)(int);
+    using callback_t = std::function<void(int)>;
 
-    SerialApp(std::string port_name, int baud, callback_t callback) : 
+    SerialApp(std::string port_name, int baud, callback_t callback = empty_callback) : 
         m_port_name(port_name),
         m_baud(baud),
         m_callback(callback)
@@ -40,6 +40,10 @@ private:
 
     callback_t m_callback;
     ofSerial m_serial;
+
+    static void empty_callback(int) {
+        return;
+    }
 };
 }
 

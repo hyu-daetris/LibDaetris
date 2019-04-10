@@ -20,7 +20,7 @@ public:
     void setup() {
         m_serial.setup(m_port_name, m_baud);
 
-        if (m_serial.isInitialized()) {
+        if (!m_serial.isInitialized()) {
             throw std::runtime_error("Serial port couldn't initialized");
         }
     }

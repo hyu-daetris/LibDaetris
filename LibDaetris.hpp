@@ -33,6 +33,10 @@ public:
         }
     }
 
+    void set_callback(callback_t callback) {
+        m_callback = callback;
+    }
+
 
 private:
     std::string m_port_name;

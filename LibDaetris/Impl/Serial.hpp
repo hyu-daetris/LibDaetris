@@ -7,48 +7,61 @@
 
 namespace LibDaetris
 {
-class SerialApp : public ofBaseApp {
-public:
-    using callback_t = std::function<void(int)>;
+    class SerialApp : public ofBaseApp {
+    public:
+        using callback_t = std::function<void(int)>;
 
-    SerialApp(std::string port_name, int baud, callback_t callback = empty_callback) : 
-        m_port_name(port_name),
-        m_baud(baud),
-        m_callback(callback)
-    {
-        // Do Nothing
-    }
-
-    void setup() {
-        m_serial.setup(m_port_name, m_baud);
-
-        if (!m_serial.isInitialized()) {
-            throw std::runtime_error("Serial port couldn't initialized");
+        SerialApp(std::string port_name, int baud, callback_t callback = empty_callback) :
+            m_available(false),
+            m_port_name(port_name),
+            m_baud(baud),
+            m_callback(callback)
+        {
+            // Do Nothing
         }
-    }
 
-    void update() {
-        if (m_serial.available() > 0) {
-            m_callback(m_serial.readByte());
+        void setup() {
+            m_serial.setup(m_port_name, m_baud);
+            if (m_serial.isInitialized()) {
+                m_available = true;
+            }
         }
-    }
 
-    void set_callback(callback_t callback) {
-        m_callback = callback;
-    }
+        void update() {
+            if (m_available && m_serial.available() > 0) {
+                m_callback(m_serial.readByte());
+            }
+        }
 
+        std::string const& port_name() const {
+            return m_port_name;
+        }
 
-private:
-    std::string m_port_name;
-    int m_baud;
+        int baud() const {
+            return m_baud;
+        }
 
-    callback_t m_callback;
-    ofSerial m_serial;
+        void set_callback(callback_t callback) {
+            m_callback = callback;
+        }
 
-    static void empty_callback(int) {
-        return;
-    }
-};
+        bool available() const {
+            return m_available;
+        }
+
+    private:
+        bool m_available;
+
+        std::string m_port_name;
+        int m_baud;
+
+        callback_t m_callback;
+        ofSerial m_serial;
+
+        static void empty_callback(int) {
+            return;
+        }
+    };
 }
 
 #endif
